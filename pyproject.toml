@@ -1,0 +1,96 @@
+[project]
+name = "rich-dataclass"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = ["dacite>=1.9.2"]
+
+[dependency-groups]
+lint = [
+  "ruff>=0.0.290",
+  "codespell>=2.2.5",
+  "mypy>=1.5.1",
+  "pre-commit>=3.4.0",
+  "shellcheck-py>=0.9.0.5",
+  "pyright>=1.1.327",
+  "sourcery>=1.9.0",
+]
+test = [
+    "pytest>=8.4.2",
+    "pytest-randomly>=4.0.1",
+]
+
+[tool.mypy]
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+warn_unreachable = true
+warn_return_any = true
+strict = true
+disallow_untyped_decorators = true
+disallow_any_generics = false
+implicit_reexport = false
+show_error_codes = true
+
+[tool.ruff]
+line-length = 120
+src = ["polyfactory", "tests", "docs/examples"]
+target-version = "py38"
+
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = 88
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+  "A003",   # flake8-builtins - class attribute {name} is shadowing a python builtin
+  "ANN401", # Dynamically typed expressions (typing.Any)
+  "B010",   # flake8-bugbear - do not call setattr with a constant attribute value
+  "D100",   # pydocstyle - missing docstring in public module
+  "D101",   # pydocstyle - missing docstring in public class
+  "D102",   # pydocstyle - missing docstring in public method
+  "D103",   # pydocstyle - missing docstring in public function
+  "D104",   # pydocstyle - missing docstring in public package
+  "D105",   # pydocstyle - missing docstring in magic method
+  "D106",   # pydocstyle - missing docstring in public nested class
+  "D107",   # pydocstyle - missing docstring in __init__
+  "D212",   # pydocstyle - multi-line docstring summary should start at the first line
+  "D202",   # pydocstyle - no blank lines allowed after function docstring
+  "D205",   # pydocstyle - 1 blank line required between summary line and description
+  "D415",   # pydocstyle - first line should end with a period, question mark, or exclamation point
+  "E501",   # pycodestyle line too long, handled by black
+  "FBT001", # flake8-boolean-trap Boolean-typed positional argument in function definition
+  "FBT002", # flake8-boolean-trap Boolean default positional argument in function definition
+  "N818",   # pep8-naming - exception name should be named with an Error suffix
+  "S311",   # flake8-bandit - Standard pseudo-random generators are not suitable for security/cryptographic purposes
+  "PYI019", # Use `Self` instead of custom TypeVar
+  "UP037",  # pyupgrade - removes quotes from type annotation
+  "COM812", # conflict with formatter
+  "ISC001", # conflict with formatter
+]
+
+[tool.ruff.lint.flake8-builtins]
+builtins-allowed-modules = ["types"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.pep8-naming]
+classmethod-decorators = [
+  "classmethod",
+  "pydantic.validator",
+  "pydantic.root_validator",
+  "sqlalchemy.ext.declarative.declared_attr",
+]
+
+[tool.ruff.lint.isort]
+section-order = [
+  "future",
+  "standard-library",
+  "third-party",
+  "first-party",
+  "local-folder",
+]
+lines-after-imports = 2
