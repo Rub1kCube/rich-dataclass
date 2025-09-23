@@ -13,7 +13,6 @@ if TYPE_CHECKING:
 
 def rich_dataclass_from_dict_list(
     *serializer_classes: type[DataclassRichInstance],
-    ignore_extra: bool = False,
     items: list[dict[str, Any]],
 ) -> list[DataclassRichInstance]:
     """Convert a list of dicts into a list of rich dataclass instances."""
@@ -28,7 +27,7 @@ def rich_dataclass_from_dict_list(
 
         for rich_class in serializer_classes:
             try:
-                instance = rich_class.from_dict(item, ignore_extra=ignore_extra)
+                instance = rich_class.from_dict(item)
                 break
             except dacite.DaciteError:
                 continue
@@ -45,6 +44,7 @@ def rich_dataclass_from_dict_list(
 def rich_dataclass_to_dict_list(
     instances: Sequence[DataclassRichInstance],
     exclude_none: bool = False,
+    exclude: set[str] | None = None,
 ) -> list[dict[str, Any]]:
     """Convert a list of rich dataclass instances to a list of dictionaries."""
-    return [instance.as_dict(exclude_none=exclude_none) for instance in instances]
+    return [instance.as_dict(exclude_none=exclude_none, exclude=exclude) for instance in instances]

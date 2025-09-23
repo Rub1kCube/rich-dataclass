@@ -1,13 +1,15 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TextIO, runtime_checkable
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TextIO, Union, runtime_checkable
 
-from typing_extensions import Self
+from typing_extensions import Self, TypeAlias
 
 
 if TYPE_CHECKING:
     from dataclasses import Field as DataclassField
-    from pathlib import Path
+
+JsonType: TypeAlias = Union[str, bytes, bytearray, TextIO, Path]
 
 
 @runtime_checkable
@@ -30,7 +32,6 @@ class DataclassRichInstance(Protocol):
         exclude_none: bool = False,
         exclude: set[str] | None = None,
         ensure_ascii: bool = False,
-        cls_encoder: type[Any] | None = None,
     ) -> str: ...
 
     @classmethod
@@ -39,6 +40,5 @@ class DataclassRichInstance(Protocol):
     @classmethod
     def from_json(
         cls,
-        data: str | bytes | bytearray | Path | TextIO,
-        cls_decoder: type[Any] | None = None,
+        data: JsonType,
     ) -> Self: ...
