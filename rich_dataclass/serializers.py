@@ -16,7 +16,6 @@ class SerializerReturn(NamedTuple):
 
 
 class AbstractSerializer(ABC):
-
     def __init__(self, dataclass: DataclassInstance, field: DataclassField) -> None:
         self.field = field
         self.metadata_field = self.field.metadata
@@ -30,7 +29,6 @@ class AbstractSerializer(ABC):
 
 
 class AliasSerializer(AbstractSerializer):
-
     def serializer(self) -> SerializerReturn:
         name_field: str = self.metadata_field.get("alias", self.field.name)
         return SerializerReturn(name_field, self.value_field)

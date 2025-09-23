@@ -74,14 +74,6 @@ builtins-allowed-modules = ["types"]
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
-[tool.ruff.lint.pep8-naming]
-classmethod-decorators = [
-  "classmethod",
-  "pydantic.validator",
-  "pydantic.root_validator",
-  "sqlalchemy.ext.declarative.declared_attr",
-]
-
 [tool.ruff.lint.isort]
 section-order = [
   "future",
