@@ -39,7 +39,10 @@ class RichDataclassMixin:
         value_field = getattr(obj, field_.name)
 
         if not isinstance(serializers, Iterable):
-            msg = ""
+            msg = (
+                f"Field `{field_.name}` has an invalid value in metadata['serializers']: "
+                f"expected an Iterable, got {type(serializers).__name__}"
+            )
             raise TypeError(msg)
 
         for serializer in serializers:

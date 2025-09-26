@@ -2,13 +2,14 @@
 authors = [{ name = "Demin Vadim", email = "demin02vadim@gmail.com" }]
 keywords = ["dataclasses", "serializer", "deserializer", "dacite", "json"]
 name = "rich-dataclass"
-version = "0.1.0"
+version = "0.0.1"
 description = "Lightweight library for simple dataclass serialization and deserialization to dict and JSON."
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = ["dacite>=1.9.2"]
 
 [dependency-groups]
+json-backend = ["orjson>=3.11.3", "simplejson>=3.20.1", "ujson>=5.11.0"]
 lint = [
   "ruff>=0.0.290",
   "codespell>=2.2.5",
