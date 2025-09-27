@@ -34,7 +34,7 @@ show_error_codes = true
 [tool.ruff]
 line-length = 120
 src = ["polyfactory", "tests", "docs/examples"]
-target-version = "py38"
+target-version = "py39"
 
 [tool.ruff.format]
 docstring-code-format = true
@@ -79,8 +79,8 @@ convention = "google"
 section-order = [
   "future",
   "standard-library",
-  "third-party",
   "first-party",
+  "third-party",
   "local-folder",
 ]
 lines-after-imports = 2

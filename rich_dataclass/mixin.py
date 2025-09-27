@@ -7,11 +7,11 @@ from dataclasses import fields
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar
 
+from rich_dataclass.serializers import AbstractFieldSerializer, FieldSerializerReturn
+from rich_dataclass.types import DataclassInstance, DataclassRichInstance
+
 import dacite
 from typing_extensions import Self
-
-from rich_dataclass.serializers import AbstractSerializer, SerializerReturn
-from rich_dataclass.types import DataclassInstance, DataclassRichInstance
 
 
 if TYPE_CHECKING:
@@ -33,7 +33,7 @@ class RichDataclassMixin:
     __json_cls_decoder__: ClassVar[Any] = json.JSONDecoder
 
     @staticmethod
-    def _process_field_serializer(obj: Any, field_: DataclassField) -> SerializerReturn:
+    def _process_field_serializer(obj: Any, field_: DataclassField) -> FieldSerializerReturn:
         serializers = field_.metadata.get("serializers", [])
         name_field = field_.name
         value_field = getattr(obj, field_.name)
@@ -46,11 +46,11 @@ class RichDataclassMixin:
             raise TypeError(msg)
 
         for serializer in serializers:
-            if issubclass(serializer, AbstractSerializer):
+            if issubclass(serializer, AbstractFieldSerializer):
                 serializer_instance = serializer(dataclass=obj, field=field_)
                 name_field, value_field = serializer_instance.serializer()
 
-        return SerializerReturn(name_field, value_field)
+        return FieldSerializerReturn(name_field, value_field)
 
     def _serialize_value(self, value: DataclassInstance | list | tuple | dict | Any) -> Any:
         if isinstance(value, (DataclassInstance, DataclassRichInstance)):

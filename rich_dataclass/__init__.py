@@ -1,9 +1,9 @@
 from rich_dataclass.mixin import RichDataclassMixin
-from rich_dataclass.serializers import AbstractSerializer, AliasSerializer
+from rich_dataclass.serializers import AbstractFieldSerializer, AliasSerializer
 
 
 __all__ = [
-    "AbstractSerializer",
+    "AbstractFieldSerializer",
     "AliasSerializer",
     "RichDataclassMixin",
 ]

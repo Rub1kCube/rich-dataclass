@@ -4,16 +4,16 @@ from contextlib import suppress
 from dataclasses import Field as DataclassField
 from dataclasses import asdict
 from dataclasses import fields as fields_
-from typing import TYPE_CHECKING, Any, Generator, overload
-
-import dacite
+from typing import TYPE_CHECKING, Any, overload
 
 from rich_dataclass import RichDataclassMixin
 from rich_dataclass.types import DataclassRichInstance
 
+import dacite
+
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Generator, Sequence
 
     from rich_dataclass.types import DataclassInstance
 
@@ -65,6 +65,7 @@ def dataclass_from_dict(
         for rich_class in serializer_classes:
             with suppress(Exception):
                 instance = _from_dict(rich_class, data)
+                break
         if instance is None:
             msg = f"Could not serialize record: {item}"
             raise ValueError(msg)
