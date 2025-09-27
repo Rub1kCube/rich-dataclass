@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Iterable
 from dataclasses import Field as DataclassField
 from dataclasses import fields
 from pathlib import Path
@@ -27,27 +26,31 @@ class RichDataclassMixin:
     """
 
     __dacite_config__: ClassVar[dacite.Config] = dacite.Config()
+    __default_field_serializers__: ClassVar[tuple[type[AbstractFieldSerializer]] | None] = None
 
     __json_backend__: ClassVar[Any] = json
     __json_cls_encoder__: ClassVar[Any] = json.JSONEncoder
     __json_cls_decoder__: ClassVar[Any] = json.JSONDecoder
 
-    @staticmethod
-    def _process_field_serializer(obj: Any, field_: DataclassField) -> FieldSerializerReturn:
+    def _process_field_serializer(self, obj: Any, field_: DataclassField) -> FieldSerializerReturn:
         serializers = field_.metadata.get("serializers", [])
-        name_field = field_.name
-        value_field = getattr(obj, field_.name)
 
-        if not isinstance(serializers, Iterable):
+        if not isinstance(serializers, list):
             msg = (
                 f"Field `{field_.name}` has an invalid value in metadata['serializers']: "
-                f"expected an Iterable, got {type(serializers).__name__}"
+                f"expected an list, got {type(serializers).__name__}"
             )
             raise TypeError(msg)
 
+        if self.__default_field_serializers__:
+            serializers.extend(self.__default_field_serializers__)
+
+        name_field = field_.name
+        value_field = getattr(obj, field_.name)
+
         for serializer in serializers:
             if issubclass(serializer, AbstractFieldSerializer):
-                serializer_instance = serializer(dataclass=obj, field=field_)
+                serializer_instance = serializer(dataclass_instance=obj, field=field_)
                 name_field, value_field = serializer_instance.serializer()
 
         return FieldSerializerReturn(name_field, value_field)

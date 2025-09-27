@@ -1,15 +1,15 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TextIO, Union, runtime_checkable
+from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TextIO, TypeAlias, runtime_checkable
 
-from typing_extensions import Self, TypeAlias
+from typing_extensions import Self
 
 
 if TYPE_CHECKING:
     from dataclasses import Field as DataclassField
 
-JsonType: TypeAlias = Union[str, bytes, bytearray, TextIO, Path]
+JsonType: TypeAlias = str | bytes | bytearray | TextIO | Path
 
 
 @runtime_checkable

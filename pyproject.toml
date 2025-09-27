@@ -5,11 +5,18 @@ name = "rich-dataclass"
 version = "0.0.1"
 description = "Lightweight library for simple dataclass serialization and deserialization to dict and JSON."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10,<4.0"
 dependencies = ["dacite>=1.9.2"]
 
-[dependency-groups]
+[project.urls]
+"Issue Tracker" = "https://github.com/Rub1kCube/rich-dataclass/issues?q=is%3Aissue%20state%3Aopen%20sort%3Acreated-desc"
+homepage = "https://github.com/Rub1kCube/rich-dataclass"
+repository = "https://github.com/Rub1kCube/rich-dataclass"
+
+[project.optional-dependencies]
 json-backend = ["orjson>=3.11.3", "simplejson>=3.20.1", "ujson>=5.11.0"]
+
+[dependency-groups]
 lint = [
   "ruff>=0.0.290",
   "codespell>=2.2.5",
@@ -18,6 +25,16 @@ lint = [
   "pre-commit>=4.3.0",
 ]
 test = ["pytest>=8.4.2", "pytest-randomly>=4.0.1"]
+
+[tool.uv]
+default-groups = ["lint", "test"]
+
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[tool.uv.sources]
+rich_dataclass = { workspace = true }
 
 [tool.mypy]
 warn_unused_ignores = true
@@ -33,8 +50,8 @@ show_error_codes = true
 
 [tool.ruff]
 line-length = 120
-src = ["polyfactory", "tests", "docs/examples"]
-target-version = "py39"
+src = ["rich_dataclass", "tests"]
+target-version = "py310"
 
 [tool.ruff.format]
 docstring-code-format = true
@@ -46,6 +63,7 @@ ignore = [
   "A003",   # flake8-builtins - class attribute {name} is shadowing a python builtin
   "ANN401", # Dynamically typed expressions (typing.Any)
   "B010",   # flake8-bugbear - do not call setattr with a constant attribute value
+  "COM812", # conflict with formatter
   "D100",   # pydocstyle - missing docstring in public module
   "D101",   # pydocstyle - missing docstring in public class
   "D102",   # pydocstyle - missing docstring in public method
@@ -54,19 +72,18 @@ ignore = [
   "D105",   # pydocstyle - missing docstring in magic method
   "D106",   # pydocstyle - missing docstring in public nested class
   "D107",   # pydocstyle - missing docstring in __init__
-  "D212",   # pydocstyle - multi-line docstring summary should start at the first line
   "D202",   # pydocstyle - no blank lines allowed after function docstring
   "D205",   # pydocstyle - 1 blank line required between summary line and description
+  "D212",   # pydocstyle - multi-line docstring summary should start at the first line
   "D415",   # pydocstyle - first line should end with a period, question mark, or exclamation point
   "E501",   # pycodestyle line too long, handled by black
   "FBT001", # flake8-boolean-trap Boolean-typed positional argument in function definition
   "FBT002", # flake8-boolean-trap Boolean default positional argument in function definition
-  "N818",   # pep8-naming - exception name should be named with an Error suffix
-  "S311",   # flake8-bandit - Standard pseudo-random generators are not suitable for security/cryptographic purposes
-  "PYI019", # Use `Self` instead of custom TypeVar
-  "UP037",  # pyupgrade - removes quotes from type annotation
-  "COM812", # conflict with formatter
   "ISC001", # conflict with formatter
+  "N818",   # pep8-naming - exception name should be named with an Error suffix
+  "PYI019", # Use `Self` instead of custom TypeVar
+  "S311",   # flake8-bandit - Standard pseudo-random generators are not suitable for security/cryptographic purposes
+  "UP037",  # pyupgrade - removes quotes from type annotation
 ]
 
 [tool.ruff.lint.flake8-builtins]

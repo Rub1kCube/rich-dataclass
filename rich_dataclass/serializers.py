@@ -32,3 +32,10 @@ class AliasSerializer(AbstractFieldSerializer):
     def serializer(self) -> FieldSerializerReturn:
         name_field: str = self.metadata_field.get("alias", self.field.name)
         return FieldSerializerReturn(name_field, self.value_field)
+
+
+class AnyTypeToStringSerializer(AbstractFieldSerializer):
+    def serializer(self) -> FieldSerializerReturn:
+        if not isinstance(self.value_field, str):
+            return FieldSerializerReturn(str(self.value_field), self.field.name)
+        return FieldSerializerReturn(self.value_field, self.field.name)
