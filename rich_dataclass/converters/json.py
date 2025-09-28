@@ -18,7 +18,7 @@ class JsonConverter(AbstractConverter):
     __json_cls_decoder__: ClassVar[Any] = json.JSONDecoder
 
     @classmethod
-    def as_obj(     # type: ignore[override]
+    def as_obj(  # type: ignore[override]
         cls,
         dataclass_instance: DataclassRichInstance | DataclassInstance,
         exclude_none: bool = False,
@@ -27,13 +27,13 @@ class JsonConverter(AbstractConverter):
     ) -> str:
         """Convert dataclass to JSON string."""
         return cls.__json_backend__.dumps(  # type: ignore[no-any-return]
-           asdict(dataclass_instance, exclude_none=exclude_none, exclude=exclude),
+            asdict(dataclass_instance, exclude_none=exclude_none, exclude=exclude),
             ensure_ascii=ensure_ascii,
             cls=cls.__json_cls_encoder__,
         )
 
     @classmethod
-    def from_obj(     # type: ignore[override]
+    def from_obj(  # type: ignore[override]
         cls,
         dataclass: type[DataclassRichInstance | DataclassInstance],
         data: JsonType,

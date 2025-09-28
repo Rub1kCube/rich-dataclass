@@ -24,7 +24,6 @@ class WrapperConverters:
 
 
 class ConverterAdapter:
-
     def __init__(self, converter: type[AbstractConverter], bound: t.Any) -> None:
         self._converter = converter
         self._bound = bound
@@ -37,7 +36,6 @@ class ConverterAdapter:
 
 
 class ConvertersProxy:
-
     def __init__(self, wrapper: WrapperConverters, bound: t.Any) -> None:
         self._wrapper = wrapper
         self._bound = bound
