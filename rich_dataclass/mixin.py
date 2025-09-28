@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import json
+import typing as t
 from dataclasses import Field as DataclassField
 from dataclasses import fields
-from pathlib import Path
-from typing import TYPE_CHECKING, Any, ClassVar
 
+from rich_dataclass.converters import ConvertersProxy, WrapperConverters
 from rich_dataclass.serializers import AbstractFieldSerializer, FieldSerializerReturn
 from rich_dataclass.types import DataclassInstance, DataclassRichInstance
 
@@ -13,26 +12,29 @@ import dacite
 from typing_extensions import Self
 
 
-if TYPE_CHECKING:
-    from rich_dataclass.types import JsonType
+T = t.TypeVar("T", bound="RichDataclassMixin")
+
+
+class _ConvertersDescriptor:
+    def __get__(self, instance: T | None, owner: type[T]) -> ConvertersProxy:
+        if owner.__converters__ is None:
+            msg = "No converters registered"
+            raise AttributeError(msg)
+
+        bound = instance if instance is not None else owner
+        return ConvertersProxy(owner.__converters__, bound)
 
 
 class RichDataclassMixin:
-    """
-    Mixin class for enhancing dataclass functionality.
+    """Mixin class for enhancing dataclass functionality."""
 
-    This mixin provides methods to convert a dataclass instance to a dictionary
-    or JSON string, and to create a dataclass instance from a dictionary or JSON.
-    """
+    __dacite_config__: t.ClassVar[dacite.Config] = dacite.Config()
+    __default_field_serializers__: t.ClassVar[tuple[type[AbstractFieldSerializer]] | None] = None
+    __converters__: t.ClassVar[WrapperConverters | None] = None
 
-    __dacite_config__: ClassVar[dacite.Config] = dacite.Config()
-    __default_field_serializers__: ClassVar[tuple[type[AbstractFieldSerializer]] | None] = None
+    converters = _ConvertersDescriptor()
 
-    __json_backend__: ClassVar[Any] = json
-    __json_cls_encoder__: ClassVar[Any] = json.JSONEncoder
-    __json_cls_decoder__: ClassVar[Any] = json.JSONDecoder
-
-    def _process_field_serializer(self, obj: Any, field_: DataclassField) -> FieldSerializerReturn:
+    def _process_field_serializer(self, obj: t.Any, field_: DataclassField) -> FieldSerializerReturn:
         serializers = field_.metadata.get("serializers", [])
 
         if not isinstance(serializers, list):
@@ -55,7 +57,7 @@ class RichDataclassMixin:
 
         return FieldSerializerReturn(name_field, value_field)
 
-    def _serialize_value(self, value: DataclassInstance | list | tuple | dict | Any) -> Any:
+    def _serialize_value(self, value: DataclassInstance | list | tuple | dict | t.Any) -> t.Any:
         if isinstance(value, (DataclassInstance, DataclassRichInstance)):
             return self._dataclass_to_dict(value)
         if isinstance(value, (list, tuple)):
@@ -64,7 +66,7 @@ class RichDataclassMixin:
             return {k: self._serialize_value(v) for k, v in value.items()}
         return value
 
-    def _dataclass_to_dict(self, value: DataclassInstance | DataclassRichInstance) -> dict[str, Any]:
+    def _dataclass_to_dict(self, value: DataclassInstance | DataclassRichInstance) -> dict[str, t.Any]:
         return {
             name: self._serialize_value(val)
             for f in fields(value)
@@ -75,7 +77,7 @@ class RichDataclassMixin:
         self,
         exclude_none: bool = False,
         exclude: set[str] | None = None,
-    ) -> dict[str, Any]:
+    ) -> dict[str, t.Any]:
         """Convert dataclass to dict."""
         data = self._dataclass_to_dict(self)  # type: ignore[arg-type]
         if exclude_none:
@@ -84,53 +86,11 @@ class RichDataclassMixin:
             data = {k: v for k, v in data.items() if k not in exclude}
         return data
 
-    def as_json(
-        self,
-        exclude_none: bool = False,
-        exclude: set[str] | None = None,
-        ensure_ascii: bool = False,
-    ) -> str:
-        """Convert dataclass to JSON string."""
-        return self.__json_backend__.dumps(  # type: ignore[no-any-return]
-            self.as_dict(exclude_none=exclude_none, exclude=exclude),
-            ensure_ascii=ensure_ascii,
-            cls=self.__json_cls_encoder__,
-        )
-
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> Self:
+    def from_dict(cls, data: dict[str, t.Any]) -> Self:
         """Build dataclass from dict."""
         return dacite.from_dict(
             data_class=cls,
             data=data,
             config=cls.__dacite_config__,
         )
-
-    @classmethod
-    def from_json(
-        cls,
-        data: JsonType,
-    ) -> Self:
-        """Build dataclass from JSON string, auto-parsing nested JSON strings."""
-        if isinstance(data, Path):
-            data = Path(data).read_text()
-        elif hasattr(data, "read"):
-            data = data.read()
-        parsed = cls.__json_backend__.loads(data, cls=cls.__json_cls_decoder__)
-        parsed = cls._parse_nested_json_strings(parsed)
-        return cls.from_dict(parsed)
-
-    @classmethod
-    def _parse_nested_json_strings(cls, obj: str | dict[str, Any] | list) -> str | dict[str, Any] | list:
-        """Recursively parse strings that look like JSON."""
-        if isinstance(obj, str):
-            stripped = obj.strip()
-            if stripped.startswith(("{", "[")):
-                try:
-                    return cls._parse_nested_json_strings(cls.__json_backend__.loads(obj))
-                except Exception:  # noqa: BLE001
-                    return obj
-            return obj
-        if isinstance(obj, list):
-            return [cls._parse_nested_json_strings(v) for v in obj]
-        return {k: cls._parse_nested_json_strings(v) for k, v in obj.items()}

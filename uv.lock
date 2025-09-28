@@ -434,7 +434,7 @@ provides-extras = ["json-backend"]
 [package.metadata.requires-dev]
 lint = [
     { name = "codespell", specifier = ">=2.2.5" },
-    { name = "mypy", specifier = ">=1.5.1" },
+    { name = "mypy", specifier = ">=1.8.2" },
     { name = "pre-commit", specifier = ">=4.3.0" },
     { name = "pyright", specifier = ">=1.1.405" },
     { name = "ruff", specifier = ">=0.0.290" },

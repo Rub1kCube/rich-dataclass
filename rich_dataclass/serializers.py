@@ -1,18 +1,18 @@
 from __future__ import annotations
 
+import typing as t
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, NamedTuple
 
 
-if TYPE_CHECKING:
+if t.TYPE_CHECKING:
     from dataclasses import Field as DataclassField
 
     from rich_dataclass.types import DataclassInstance
 
 
-class FieldSerializerReturn(NamedTuple):
+class FieldSerializerReturn(t.NamedTuple):
     name_field: str
-    value_field: Any
+    value_field: t.Any
 
 
 class AbstractFieldSerializer(ABC):
